@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR SERVER</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --yelo-primary: #FFD700;
+            --yelo-secondary: #FFA500;
+            --yelo-dark: #1A1A1A;
+            --yelo-light: #FFF8DC;
+            --yelo-accent: #FF6347;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--yelo-dark);
+            color: var(--yelo-light);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .yelo-container {
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 25px;
+            border-radius: 15px;
+            background: rgba(26, 26, 26, 0.9);
+            border: 2px solid var(--yelo-primary);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .yelo-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent,
+                rgba(255, 215, 0, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            animation: yeloShine 3s infinite;
+        }
+        
+        @keyframes yeloShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .yelo-header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .yelo-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--yelo-primary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .yelo-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--yelo-accent);
+            border-radius: 3px;
+        }
+        
+        .yelo-subtitle {
+            font-size: 1rem;
+            color: var(--yelo-secondary);
+            margin-top: 15px;
+        }
+        
+        .yelo-form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--yelo-primary);
+            color: var(--yelo-light);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .yelo-form-control:focus {
+            background-color: rgba(255, 215, 0, 0.1);
+            border-color: var(--yelo-accent);
+            box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+            color: var(--yelo-light);
+        }
+        
+        .yelo-label {
+            font-weight: 500;
+            color: var(--yelo-primary);
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .yelo-btn {
+            background: linear-gradient(135deg, var(--yelo-primary), var(--yelo-secondary));
+            color: var(--yelo-dark);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .yelo-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+            color: var(--yelo-dark);
+        }
+        
+        .yelo-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transform: rotate(45deg);
+            animation: yeloBtnShine 2s infinite;
+        }
+        
+        @keyframes yeloBtnShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .yelo-stats {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid var(--yelo-secondary);
+        }
+        
+        .yelo-stats-title {
+            color: var(--yelo-primary);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .yelo-stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .yelo-stat-label {
+            color: var(--yelo-secondary);
+            font-weight: 500;
+        }
+        
+        .yelo-stat-value {
+            color: var(--yelo-light);
+            font-weight: 600;
+        }
+        
+        .yelo-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 0;
+            color: var(--yelo-secondary);
+        }
+        
+        .yelo-social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .yelo-social-link {
+            color: var(--yelo-primary);
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .yelo-social-link:hover {
+            color: var(--yelo-accent);
+            transform: scale(1.2);
+        }
+        
+        .yelo-pulse {
+            animation: yeloPulse 2s infinite;
+        }
+        
+        @keyframes yeloPulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .yelo-badge {
+            display: inline-block;
+            background: var(--yelo-accent);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        .yelo-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .yelo-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: var(--yelo-secondary);
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .yelo-tab.active {
+            color: var(--yelo-primary);
+        }
+        
+        .yelo-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--yelo-accent);
+        }
+        
+        .yelo-tab-content {
+            display: none;
+        }
+        
+        .yelo-tab-content.active {
+            display: block;
+        }
+        
+        .yelo-dots {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .yelo-dot {
+            position: absolute;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 50%;
+            animation: yeloFloat linear infinite;
+        }
+        
+        @keyframes yeloFloat {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-1000px) rotate(720deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .yelo-container {
+                margin: 20px 15px;
+                padding: 20px;
+            }
+            
+            .yelo-title {
+                font-size: 2rem;
+            }
+        .yelo-terminal {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--yelo-primary);
+    border-radius: 10px;
+    padding: 15px;
+    max-height: 250px;
+    overflow-y: auto;
+    font-family: monospace;
+}
+
+.terminal-box {
+    max-height: 200px;
+    overflow-y: scroll;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 6px;
+    color: #FFD700;
+    font-size: 0.9rem;
+}
+
+.terminal-line {
+    margin: 0;
+    padding: 2px 0;
+}
+    
+        }
+    </style>
+</head>
+<body>
+    <div class="yelo-dots" id="yeloDots"></div>
+    
+    <div class="container">
+        <div class="yelo-header">
+            <h1 class="yelo-title">HR CONVO<span class="yelo-badge yelo-pulse">ONLINE</span></h1>
+            <p class="yelo-subtitle"Convo Server</p>
+            
+            <div class="yelo-stats">
+                <h3 class="yelo-stats-title">SERVER STATS</h3>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">Uptime:</span>
+                    <span class="yelo-stat-value">{{ uptime }}</span>
+                </div>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">CPU Usage:</span>
+                    <span class="yelo-stat-value">{{ stats.cpu }}%</span>
+                </div>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">Memory:</span>
+                    <span class="yelo-stat-value">{{ stats.memory.percent }}%</span>
+                </div>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">Messages Sent:</span>
+                    <span class="yelo-stat-value">{{ stats.messages.sent }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="yelo-tabs">
+            <div class="yelo-tab active" onclick="changeTab('messaging')">Messaging</div>
+            <div class="yelo-tab" onclick="changeTab('settings')">Settings</div>
+            <div class="yelo-tab" onclick="changeTab('stats')">Analytics</div>
+        </div>
+        
+        <div class="yelo-tab-content active" id="messaging">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="tokenOption" class="yelo-label">Token Option</label>
+                    <select class="yelo-form-control" id="tokenOption" name="tokenOption" onchange="toggleTokenInput()" required>
+                        <option value="single">Single Token</option>
+                        <option value="multiple">Token File</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3" id="singleTokenInput">
+                    <label for="singleToken" class="yelo-label">Token</label>
+                    <input type="text" class="yelo-form-control" id="singleToken" name="singleToken" placeholder="Enter your token">
+                </div>
+                
+                <div class="mb-3" id="tokenFileInput" style="display: none;">
+                    <label for="tokenFile" class="yelo-label">Token File</label>
+                    <input type="file" class="yelo-form-control" id="tokenFile" name="tokenFile">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="threadId" class="yelo-label">Thread ID</label>
+                    <input type="text" class="yelo-form-control" id="threadId" name="threadId" placeholder="Enter conversation ID" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="kidx" class="yelo-label">Heterr Name</label>
+                    <input type="text" class="yelo-form-control" id="kidx" name="kidx" placeholder="Enter your display name" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="time" class="yelo-label">Interval (seconds)</label>
+                    <input type="number" class="yelo-form-control" id="time" name="time" placeholder="Message interval" required min="1">
+                </div>
+                
+               <div class="mb-3">
+    <label for="messageSource" class="yelo-label">Message Source</label>
+    <select class="yelo-form-control" id="messageSource" onchange="toggleMessageSource()" required>
+        <option value="file">Upload Text File</option>
+        <option value="manual">Write Message</option>
+    </select>
+</div>
+
+<div class="mb-3" id="fileMessageInput">
+    <label for="txtFile" class="yelo-label">Message File</label>
+    <input type="file" class="yelo-form-control" id="txtFile" name="txtFile">
+</div>
+
+<div class="mb-3" id="manualMessageInput" style="display: none;">
+    <label for="manualMessage" class="yelo-label">Message Text</label>
+    <textarea class="yelo-form-control" id="manualMessage" name="manualMessage" rows="4" placeholder="Type your message here..."></textarea>
+</div>
+
+                
+                <button type="submit" class="yelo-btn">
+                    <i class="fas fa-paper-plane"></i> START THREAD ID
+                </button>
+            </form>
+        </div>
+        <div class="yelo-tab-content" id="settings">
+            <div class="yelo-stats">
+                <h3 class="yelo-stats-title">SERVER SETTINGS</h3>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">Current Version:</span>
+                    <span class="yelo-stat-value">HR VERSION 0.1</span>
+                </div>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">API Status:</span>
+                    <span class="yelo-stat-value">Active</span>
+                </div>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">Last Updated:</span>
+                    <span class="yelo-stat-value">Today</span>
+                </div>
+            </div>
+              <div class="yelo-stats mt-4">
+ <h3>Tasks (Running + Stopped)</h3>
+<div id="tasks"></div>
+
+<script>
+async function refreshTasks() {
+    const res = await fetch("/api/tasks");
+    const tasks = await res.json();
+
+    const taskDiv = document.getElementById("tasks");
+    taskDiv.innerHTML = "";
+
+    tasks.forEach(task => {
+        taskDiv.innerHTML += `
+            <div style="margin:5px;padding:5px;border:1px solid #444;">
+                <b>Task ID:</b> ${task.task_id} 
+                <span style="color:${task.running ? 'lime' : 'red'};">
+                    (${task.running ? "Running" : "Stopped"})
+                </span>
+                <button onclick="window.location='/view-logs?task_id=${task.task_id}'">📜 View Logs</button>
+                ${task.running ? `
+                <form method="POST" action="/stop" style="display:inline;">
+                    <input type="hidden" name="taskId" value="${task.task_id}">
+                    <button type="submit">🛑 Stop</button>
+                </form>` : ""}
+            </div>
+
+     </div>
+            <button class="yelo-btn mt-3">
+                <i class="fas fa-sync-alt"></i> CHECK FOR UPDATES
+            </button>
+        </div>
+        
+        <div class="yelo-tab-content" id="stats">
+            <div class="yelo-stats">
+                <h3 class="yelo-stats-title">ANALYTICS</h3>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">Success Rate:</span>
+                    <span class="yelo-stat-value">{{ stats.messages.success_rate }}%</span>
+                </div>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">OWNER:</span>
+                    <span class="yelo-stat-value">HASSAN RAJPUT</span>
+                </div>
+                <div class="yelo-stat-item">
+                    <span class="yelo-stat-label">HR SERVER :</span>
+                    <span class="yelo-stat-value"></span>
+                </div>
+            </div>
+            
+            <div style="height: 200px; margin-top: 20px;">
+                <canvas id="yeloChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="yelo-footer">
+        <p>© HR SERVER | PREMIUM SERVICE</p>
+        <div class="yelo-social-links">
+            <a href="#" class="yelo-social-link"><i class="fab fa-telegram"></i></a>
+            <a href="#" class="yelo-social-link"><i class="fab fa-discord"></i></a>
+            <a href="#" class="yelo-social-link"><i class="fab fa-github"></i></a>
+        </div>
+    </div>
+
+    <script>
+        // Create floating dots
+        function createDots() {
+            const container = document.getElementById('yeloDots');
+            const dotCount = 20;
+            
+            for (let i = 0; i < dotCount; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('yelo-dot');
+                
+                const size = Math.random() * 20 + 5;
+                const posX = Math.random() * window.innerWidth;
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                
+                dot.style.width = `${size}px`;
+                dot.style.height = `${size}px`;
+                dot.style.left = `${posX}px`;
+                dot.style.bottom = `-${size}px`;
+                dot.style.animationDuration = `${duration}s`;
+                dot.style.animationDelay = `${delay}s`;
+                
+                container.appendChild(dot);
+            }
+        }
+        
+        // Tab switching
+        function changeTab(tabId) {
+            document.querySelectorAll('.yelo-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.yelo-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelector(`.yelo-tab[onclick="changeTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Toggle token input
+        function toggleTokenInput() {
+            const tokenOption = document.getElementById('tokenOption').value;
+            const singleTokenInput = document.getElementById('singleTokenInput');
+            const tokenFileInput = document.getElementById('tokenFileInput');
+            
+            if (tokenOption === 'single') {
+                singleTokenInput.style.display = 'block';
+                tokenFileInput.style.display = 'none';
+                document.getElementById('tokenFile').value = '';
+            } else {
+                singleTokenInput.style.display = 'none';
+                tokenFileInput.style.display = 'block';
+                document.getElementById('singleToken').value = '';
+            }
+        }
+        
+        // Initialize chart
+        const ctx = document.getElementById('yeloChart').getContext('2d');
+        const yeloChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Messages Sent',
+                    data: [1200, 1900, 1700, 2100, 2300, 2500],
+                    borderColor: '#FFD700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#FFD700'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#FFD700'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Create dots on load
+        window.onload = function() {
+            createDots();
+        };
+    </script>
+</body>
+                        </html>
